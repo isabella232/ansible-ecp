@@ -273,18 +273,6 @@ common: &default_settings
 # NOTE if your application has other named environments, you should
 # provide configuration settings for these environments here.
 
-portal-dev:
+{{ newrelic_override_hostname }}:
   <<: *default_settings
-  app_name: The Portal API (Development)
-
-portal-dev-06:
-  <<: *default_settings
-  app_name: The 06 Portal API (Development)
-
-cloud-portal-server:
-  <<: *default_settings
-  app_name: The Portal API (Production)
-
-cloud-portal-explore:
-  <<: *default_settings
-  app_name: The Portal API (Explore)
+  app_name: The Portal API ({{ newrelic_override_hostname }})
