@@ -1,0 +1,10 @@
+- name: Github | Configure SSH
+  copy: src=files/ssh-config.txt dest=/home/centos/.ssh/config mode=0400
+
+#- name: Github | Add host fingerprint to known host TODO
+#  known_hosts:
+#    name: github.com
+#    key: "github.com {{ lookup('file', 'files/github.com.pub') }}"
+
+- name: Github | Autoconvert https to ssh
+  git_config: name=url.git@github.com:.insteadof scope=global value=https://github.com/

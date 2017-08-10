@@ -1,0 +1,55 @@
+- name: Cloud Portal API | Create dirs
+  file: state=directory path={{ persistent_path }}/{{ item }} owner=centos group=centos
+  with_items:
+    - data/be_applications_folder
+    - data/be_deployments_folder
+    - data/be_volume_setup_folder
+    - logs
+
+- name: Cloud Portal API | Update configuration
+  template: src=templates/{{ item }}.j2 dest=/home/centos/cloud-portal-api/{{ item }} owner=centos group=centos
+  with_items:
+    - application.properties
+    - newrelic.yml
+    - logback.xml
+  notify: restart cloud-portal-api
+
+- name: Cloud Portal API | Download artifact
+  get_url:
+    url: https://ci.tsi.ebi.ac.uk/job/cloud-portal-{{  artifacts_source }}/job/ecp-api-build/lastSuccessfulBuild/artifact/target/be-portal-api.jar
+    force_basic_auth: yes
+    url_username: "{{ jenkins_user }}"
+    url_password: "{{ jenkins_token }}"
+    dest: /home/centos/cloud-portal-api/
+    owner: centos
+    group: centos
+  notify: restart cloud-portal-api
+
+- name: Cloud Portal API | Install predefined private key 
+  # temporary step so the portal can clone from github private repos, until we sort proper management of SSH keys per user
+  copy: src={{ path_to_cloud_key }} dest=/home/centos/.ssh/demo-key.pem owner=centos group=centos mode=400
+
+- name: Cloud Portal API | Register service
+  # TODO systemd module coming in ansible 2.2 !
+  template: src=templates/cloud-portal-api.service.j2 dest=/etc/systemd/system/multi-user.target.wants/cloud-portal-api.service
+  notify:
+    - reload systemd
+    - restart cloud-portal-api
+
+- name: Cloud Portal APP | Create dirs
+  file: state=directory path=/usr/share/nginx/cloud-portal-app
+
+- name: Cloud Portal APP | Copy installer
+  template: src=templates/deploy-cloud-portal-app.sh.j2 dest=/home/centos/deploy-cloud-portal-app.sh owner=centos group=centos mode=744
+  notify: reinstall cloud-portal-app
+
+- name: Cloud Portal APP | Download artifact
+  get_url:
+    url: https://ci.tsi.ebi.ac.uk/job/cloud-portal-{{ artifacts_source }}/job/ecp-app-build/lastSuccessfulBuild/artifact/portal-app.tgz
+    force_basic_auth: yes
+    url_username: "{{ jenkins_user }}"
+    url_password: "{{ jenkins_token }}"
+    dest: /home/centos/
+    owner: centos
+    group: centos
+  notify: reinstall cloud-portal-app

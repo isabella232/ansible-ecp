@@ -1,0 +1,15 @@
+---
+# handlers file for ansible-ecp
+
+- name: reload systemd
+  command: systemctl daemon-reload
+  
+- name: reload nginx
+  service: name=nginx state=reloaded
+
+- name: restart cloud-portal-api
+  service: name=cloud-portal-api state=restarted
+
+- name: reinstall cloud-portal-app
+  shell: /home/centos/deploy-cloud-portal-app.sh
+

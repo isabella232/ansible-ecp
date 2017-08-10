@@ -1,0 +1,18 @@
+galaxy_info:
+  author: Amélie Cornélis
+  description: Deploy and configure the EBI Cloud Portal
+
+  license: MIT
+
+  min_ansible_version: 2.2
+
+  platforms:
+    - name: EL
+      versions:
+        - 7
+
+  galaxy_tags: []
+
+  dependencies: []
+    # TODO we might need to put nginx: this role needs it to be 
+    # installed on the box (because we have a hanlder that restarts it)

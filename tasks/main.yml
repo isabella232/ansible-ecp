@@ -1,0 +1,23 @@
+---
+# tasks file for ansible-ecp
+- name: Install EPEL repo (needed for installing ansible)
+  yum: pkg=epel-release state=latest
+
+- name: Install portal dependencies
+  yum: pkg={{ item }} state=latest
+  with_items:
+    - java
+    - git
+    - ansible
+    - python-libcloud
+    - python2-jmespath
+
+- name: Allow NGINX to use any port
+  seboolean: name=httpd_can_network_connect state=yes persistent=yes
+
+- include: 'install_terraform.yml'
+- include: 'install_newrelic_agent.yml'
+- include: 'install_cloud_portal.yml'
+
+- include: 'configure_git_access.yml'
+  become: no

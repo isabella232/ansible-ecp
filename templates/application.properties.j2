@@ -1,0 +1,18 @@
+logging.config=logback.xml
+
+be.applications.root={{ persistent_path }}/data/be_applications_folder
+be.volume.setup.root={{ persistent_path }}/data/be_volume_setup_folder
+be.deployments.root={{ persistent_path }}/data/be_deployments_folder
+
+be.friendly.origins={% for host in friends %}{{ host }},{% endfor %}
+
+spring.datasource.url=jdbc:postgresql://{{ db_host }}:{{ db_port | default(5432) }}/{{ db_name }}
+spring.datasource.username={{ db_user }}
+spring.datasource.password={{ db_password }}
+
+elasticsearch.url={{ elasticsearch_url }}
+elasticsearch.index={{ elasticsearch_index }}
+elasticsearch.username={{ elasticsearch_username }}
+elasticsearch.password={{ elasticsearch_password }}
+
+
