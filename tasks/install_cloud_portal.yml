@@ -5,7 +5,7 @@
     - "{{ persistent_path }}/data/be_applications_folder"
     - "{{ persistent_path }}/data/be_deployments_folder"
     - "{{ persistent_path }}/data/be_volume_setup_folder"
-    - "{ persistent_path }}/logs"
+    - "{{ persistent_path }}/logs"
 
 - name: Cloud Portal API | Update configuration
   template: src=templates/{{ item }}.j2 dest=/home/centos/cloud-portal-api/{{ item }} owner=centos group=centos
