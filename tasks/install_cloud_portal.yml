@@ -1,11 +1,22 @@
 - name: Cloud Portal API | Create dirs
   file: state=directory path={{ item }} owner=centos group=centos
   with_items:
-    - /home/centos/cloud-portal-api
+    - /home/centos/cloud-portal-api/working
     - "{{ persistent_path }}/data/be_applications_folder"
     - "{{ persistent_path }}/data/be_deployments_folder"
     - "{{ persistent_path }}/data/be_volume_setup_folder"
     - "{{ persistent_path }}/logs"
+
+- name: Cloud Portal API | Link data dirs
+  file: state=link src={{ persistent_path }}/data/{{ item }} dest=/home/centos/cloud-portal-api/working/{{ item }} owner=centos group=centos
+  with_items:
+    - "be_applications_folder"
+    - "be_deployments_folder"
+    - "be_volume_setup_folder"
+
+- name: Cloud Portal API | Link install dir
+  file: state=link src=./cloud-portal-api dest=/home/centos/portal-api owner=centos group=centos
+  when: match_folder_from_db
 
 - name: Cloud Portal API | Update configuration
   template: src=templates/{{ item }}.j2 dest=/home/centos/cloud-portal-api/{{ item }} owner=centos group=centos
