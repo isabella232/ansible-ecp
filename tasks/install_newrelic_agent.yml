@@ -3,5 +3,5 @@
 
 - name: Newrelic Agent | Download
   get_url: 
-    url: "https://oss.sonatype.org/content/repositories/releases/com/newrelic/agent/java/newrelic-agent/{{version.newrelic}}/newrelic-agent-{{version.newrelic}}.jar"
+    url: "https://oss.sonatype.org/content/repositories/releases/com/newrelic/agent/java/newrelic-agent/{{ newrelic_agent_version }}/newrelic-agent-{{ newrelic_agent_version }}.jar"
     dest: /etc/newrelic/

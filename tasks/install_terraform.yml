@@ -1,31 +1,31 @@
 - name: Terraform | Install dependency (when installing)
   yum: pkg=unzip state=latest
 
-- name: Terraform | Prepare install
-  file: state=directory path=/usr/lib/terraform_{{ version.terraform }}/
+- name: Terraform | Prepare install {{ terraform_version }}
+  file: state=directory path=/usr/lib/terraform_{{ terraform_version }}/
 
 - name: Terraform | Download
-  unarchive: src="https://releases.hashicorp.com/terraform/{{ version.terraform }}/terraform_{{ version.terraform }}_linux_amd64.zip"
-    dest=/usr/lib/terraform_{{ version.terraform }}/
+  unarchive: src="https://releases.hashicorp.com/terraform/{{ terraform_version }}/terraform_{{ terraform_version }}_linux_amd64.zip"
+    dest=/usr/lib/terraform_{{ terraform_version }}/
     copy=no
-    creates=/usr/lib/terraform_{{ version.terraform }}/terraform
+    creates=/usr/lib/terraform_{{ terraform_version }}/terraform
 
 - name: Terraform | Install
-  file: state=link src=/usr/lib/terraform_{{ version.terraform }}/terraform dest=/usr/bin/terraform
+  file: state=link src=/usr/lib/terraform_{{ terraform_version }}/terraform dest=/usr/bin/terraform
 
 - name: Terraform Inventory | Configuration
   set_fact:
     terraform_inventory:
       path: "/usr/local/lib"
 
-- name: Terraform Inventory | Prepare install
-  file: state=directory path={{ terraform_inventory.path }}/terraform_inventory_{{ version.terraform_inventory }}/
+- name: Terraform Inventory | Prepare install {{ terraform_inventory_version }}
+  file: state=directory path={{ terraform_inventory.path }}/terraform_inventory_{{ terraform_inventory_version }}/
 
 - name: Terraform Inventory | Download
-  unarchive: src="https://github.com/adammck/terraform-inventory/releases/download/v{{ version.terraform_inventory }}/terraform-inventory_v{{ version.terraform_inventory }}_linux_amd64.zip"
-    dest={{ terraform_inventory.path }}/terraform_inventory_{{ version.terraform_inventory }}/
+  unarchive: src="https://github.com/adammck/terraform-inventory/releases/download/v{{ terraform_inventory_version }}/terraform-inventory_v{{ terraform_inventory_version }}_linux_amd64.zip"
+    dest={{ terraform_inventory.path }}/terraform_inventory_{{ terraform_inventory_version }}/
     copy=no
-    creates={{ terraform_inventory.path }}/terraform_inventory_{{ version.terraform_inventory }}/terraform-inventory
+    creates={{ terraform_inventory.path }}/terraform_inventory_{{ terraform_inventory_version }}/terraform-inventory
 
 - name: Terraform Inventory | Install
-  file: state=link src={{ terraform_inventory.path }}/terraform_inventory_{{ version.terraform_inventory }}/terraform-inventory dest=/usr/local/bin/terraform-inventory
+  file: state=link src={{ terraform_inventory.path }}/terraform_inventory_{{ terraform_inventory_version }}/terraform-inventory dest=/usr/local/bin/terraform-inventory
