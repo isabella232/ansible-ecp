@@ -6,9 +6,9 @@
 - name: Install portal dependencies
   yum: pkg={{ item }} state=latest
   with_items:
-    - java
+    - java-{{ java_version }}
     - git
-    - ansible
+    - ansible-{{ ecp_ansible_version }}.el7.noarch
     - python-libcloud
     - python2-jmespath
 

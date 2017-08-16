@@ -1,8 +1,10 @@
 ---
 # defaults file for ansible-ecp
 
+java_version: 1.8.0
 terraform_version: 0.7.13
 terraform_inventory_version : 0.6.1
+ecp_ansible_version: 2.3.1.0-1
 newrelic_agent_version : 3.35.0
 papertrail_host: 
 papertrail_port: 
