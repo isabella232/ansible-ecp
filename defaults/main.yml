@@ -12,3 +12,4 @@ artifacts_source: master
 api_hostname: 
 app_hostname:
 match_folder_from_db: false
+github_private_repo_allowed: []
