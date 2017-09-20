@@ -1,7 +1,7 @@
 - name: Newrelic Agent | Prepare install
   file: state=directory path=/etc/newrelic
 
-- name: Newrelic Agent | Download
+- name: Newrelic Agent | Download {{ newrelic_agent_version }}
   get_url: 
     url: "https://oss.sonatype.org/content/repositories/releases/com/newrelic/agent/java/newrelic-agent/{{ newrelic_agent_version }}/newrelic-agent-{{ newrelic_agent_version }}.jar"
     dest: /etc/newrelic/
