@@ -41,6 +41,12 @@
   # temporary step so the portal can clone from github private repos, until we sort proper management of SSH keys per user
   copy: src={{ path_to_cloud_key }} dest=/home/centos/.ssh/demo-key.pem owner=centos group=centos mode=400
 
+- name: Cloud Portal API | Download key for AAP
+  get_url:
+    url: https://{{ aap_hostname }}/meta/public.der
+    dest: /home/centos/cloud-portal-api/{{ aap_hostname }}.der
+  notify: restart cloud-portal-api
+
 - name: Cloud Portal API | Register service
   # TODO systemd module coming in ansible 2.2 !
   template: src=templates/cloud-portal-api.service.j2 dest=/etc/systemd/system/multi-user.target.wants/cloud-portal-api.service
