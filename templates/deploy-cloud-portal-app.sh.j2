@@ -5,3 +5,5 @@ tar -xzf portal-app.tgz -C /usr/share/nginx/cloud-portal-app/
 chown root.root -R /usr/share/nginx/cloud-portal-app/*
 # Sort out the api URL
 sed -i 's/dev\.api\.portal/{{api_hostname}}/g' /usr/share/nginx/cloud-portal-app/main*bundle.*
+# Sort out AAP URL
+sed -i 's/api\.aap\.tsi\.ebi\.ac\.uk/{{aap_hostname}}/g' /usr/share/nginx/cloud-portal-app/main*bundle.*
