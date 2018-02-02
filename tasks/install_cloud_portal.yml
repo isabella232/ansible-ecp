@@ -63,7 +63,7 @@
 
 - name: Cloud Portal APP | Download artifact
   get_url:
-    url: https://ci.tsi.ebi.ac.uk/job/cloud-portal-{{ artifacts_source }}/job/ecp-app-build/lastSuccessfulBuild/artifact/portal-app.tgz
+    url: https://ci.tsi.ebi.ac.uk/job/cloud-portal-{{ app_artifacts_source | default(artifacts_source) }}/job/ecp-app-build/lastSuccessfulBuild/artifact/portal-app.tgz
     force_basic_auth: yes
     url_username: "{{ jenkins_user }}"
     url_password: "{{ jenkins_token }}"
