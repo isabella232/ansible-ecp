@@ -12,6 +12,9 @@
     - python-libcloud
     - python2-jmespath
 
+- name: Install portal dependencies (python modules)
+  pip: name=virtualenv state=latest
+
 - name: Allow NGINX to use any port
   seboolean: name=httpd_can_network_connect state=yes persistent=yes
 
