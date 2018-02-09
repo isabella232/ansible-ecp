@@ -9,6 +9,7 @@
     - java-{{ java_version }}
     - git
     - ansible-{{ ecp_ansible_version }}.el7.noarch
+    - python-pip
     - python-libcloud
     - python2-jmespath
 
