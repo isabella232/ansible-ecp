@@ -28,7 +28,7 @@
 
 - name: Cloud Portal API | Download artifact
   get_url:
-    url: https://ci.tsi.ebi.ac.uk/job/cloud-portal-{{  artifacts_source }}/job/ecp-api-build/lastSuccessfulBuild/artifact/target/be-portal-api.jar
+    url: https://ci.tsi.ebi.ac.uk/job/cloud-portal-{{  artifacts_source }}/job/ecp-api-build-sdo/lastSuccessfulBuild/artifact/target/be-portal-api.jar
     force_basic_auth: yes
     url_username: "{{ jenkins_user }}"
     url_password: "{{ jenkins_token }}"
