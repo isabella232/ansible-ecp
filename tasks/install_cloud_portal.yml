@@ -26,6 +26,10 @@
     - logback.xml
   notify: restart cloud-portal-api
 
+- name: Cloud Portal API | Customise default teams configuration
+  copy: src=files/{{ inventory_hostname }}/default_teams.json dest=/home/centos/cloud-portal-api/default_teams.json owner=centos group=centos
+  notify: restart cloud-portal-api
+
 - name: Cloud Portal API | Download artifact
   get_url:
     url: https://ci.tsi.ebi.ac.uk/job/cloud-portal-{{  artifacts_source }}/job/ecp-api-build-sdo/lastSuccessfulBuild/artifact/target/be-portal-api.jar
