@@ -1,77 +1,106 @@
-- name: Cloud Portal API | Create dirs
-  file: state=directory path={{ item }} owner=centos group=centos
-  with_items:
-    - /home/centos/cloud-portal-api/working
-    - "{{ persistent_path }}/data/be_applications_folder"
-    - "{{ persistent_path }}/data/be_deployments_folder"
-    - "{{ persistent_path }}/data/be_volume_setup_folder"
-    - "{{ persistent_path }}/logs"
+- block:
+   - name: Cloud Portal API | Change ownership root of mounted dir
+     file:
+      path: "{{ persistent_path }}"
+      state: directory
+      owner: "{{ service_user }}"
+      group: "{{ agent_group }}"
+      mode: "u=rwx,g=rx,o-rwx"
+      recurse: yes
+     when: "'perm-ecp-dev-fork' in inventory_hostname"
+     
+   - name: Cloud Portal API | Create dirs
+     file: state=directory path={{ item }} owner={{ service_user }} group={{ agent_group }}
+     with_items:
+       - /home/{{ service_user }}/cloud-portal-api/working
+       - "{{ persistent_path }}/data/be_applications_folder"
+       - "{{ persistent_path }}/data/be_deployments_folder"
+       - "{{ persistent_path }}/data/be_volume_setup_folder"
+       - "{{ persistent_path }}/logs"
+   
+   - name: Cloud Portal API | Set SGID for be_deployments_folder
+     file:
+      path: "{{ persistent_path }}/data/be_deployments_folder"
+      state: directory
+      mode: "g+s"
+     
+   - name: Sets acl for agent_group on be_deployments_folder
+     acl:
+       path: "{{ persistent_path }}/data/be_deployments_folder"
+       entity: "{{ agent_group }}"
+       etype: group
+       permissions: rwx
+       state: present
+       
+   - name: Cloud Portal API | Link data dirs
+     file: state=link src={{ persistent_path }}/data/{{ item }} dest=/home/{{ service_user }}/cloud-portal-api/working/{{ item }} owner={{ service_user }} group={{ agent_group }}
+     with_items:
+       - "be_applications_folder"
+       - "be_deployments_folder"
+       - "be_volume_setup_folder"
 
-- name: Cloud Portal API | Link data dirs
-  file: state=link src={{ persistent_path }}/data/{{ item }} dest=/home/centos/cloud-portal-api/working/{{ item }} owner=centos group=centos
-  with_items:
-    - "be_applications_folder"
-    - "be_deployments_folder"
-    - "be_volume_setup_folder"
+   - name: Cloud Portal API | Link install dir
+     file: state=link src=./cloud-portal-api dest=/home/{{ service_user }}/portal-api owner={{ service_user }} group={{ agent_group }}
+     when: match_folder_from_db
 
-- name: Cloud Portal API | Link install dir
-  file: state=link src=./cloud-portal-api dest=/home/centos/portal-api owner=centos group=centos
-  when: match_folder_from_db
+   - name: Cloud Portal API | Update configuration
+     template: src=templates/{{ item }}.j2 dest=/home/{{ service_user }}/cloud-portal-api/{{ item }} owner={{ service_user }} group={{ agent_group }}
+     with_items:
+       - application.properties
+       - newrelic.yml
+       - logback.xml
+     notify: restart cloud-portal-api
 
-- name: Cloud Portal API | Update configuration
-  template: src=templates/{{ item }}.j2 dest=/home/centos/cloud-portal-api/{{ item }} owner=centos group=centos
-  with_items:
-    - application.properties
-    - newrelic.yml
-    - logback.xml
-  notify: restart cloud-portal-api
+   - name: Cloud Portal API | Download artifact
+     get_url:
+       url: https://ci.tsi.ebi.ac.uk/job/cloud-portal-{{  artifacts_source }}/job/ecp-api-build-sdo/lastSuccessfulBuild/artifact/target/be-portal-api.jar
+       force_basic_auth: yes
+       url_username: "{{ jenkins_user }}"
+       url_password: "{{ jenkins_token }}"
+       dest: /home/{{ service_user }}/cloud-portal-api/
+       owner: "{{ service_user }}"
+       group: "{{ agent_group }}"
+     notify: restart cloud-portal-api
 
-- name: Cloud Portal API | Customise default teams configuration
-  copy: src=files/{{ inventory_hostname }}/default_teams.json dest=/home/centos/cloud-portal-api/default_teams.json owner=centos group=centos
-  notify: restart cloud-portal-api
+   - name: Cloud Portal API | Install predefined private key 
+     # temporary step so the portal can clone from github private repos, until we sort proper management of SSH keys per user
+     copy: src={{ path_to_cloud_key }} dest=/home/{{ service_user }}/.ssh/demo-key.pem owner={{ service_user }} group={{ agent_group }} mode=400
 
-- name: Cloud Portal API | Download artifact
-  get_url:
-    url: https://ci.tsi.ebi.ac.uk/job/cloud-portal-{{  artifacts_source }}/job/ecp-api-build-sdo/lastSuccessfulBuild/artifact/target/be-portal-api.jar
-    force_basic_auth: yes
-    url_username: "{{ jenkins_user }}"
-    url_password: "{{ jenkins_token }}"
-    dest: /home/centos/cloud-portal-api/
-    owner: centos
-    group: centos
-  notify: restart cloud-portal-api
+   - name: Cloud Portal API | Download key for AAP
+     get_url:
+      url: https://{{ aap_hostname }}/meta/public.der
+      dest: /home/{{ service_user }}/cloud-portal-api/{{ aap_hostname }}.der
+     notify: restart cloud-portal-api
 
-- name: Cloud Portal API | Install predefined private key 
-  # temporary step so the portal can clone from github private repos, until we sort proper management of SSH keys per user
-  copy: src={{ path_to_cloud_key }} dest=/home/centos/.ssh/demo-key.pem owner=centos group=centos mode=400
+   - name: Cloud Portal API | Register service
+     # TODO systemd module coming in ansible 2.2 !
+     template: src=templates/cloud-portal-api.service.j2 dest=/etc/systemd/system/multi-user.target.wants/cloud-portal-api.service
+     notify:
+     - reload systemd
+     - restart cloud-portal-api
+   
+   - name: Add service user sudoers
+     template: src=sudoers-script.j2 dest=/etc/sudoers.d/ecp_scripts mode=0440 validate='visudo -cf %s'
+     tags: ['users','configuration','sudoers']
+     no_log: "{{no_log}}"
+     when: "'perm-ecp-dev-fork' in inventory_hostname"
+   
+   - name: Cloud Portal APP | Create dirs
+     file: state=directory path=/usr/share/nginx/cloud-portal-app
 
-- name: Cloud Portal API | Download key for AAP
-  get_url:
-    url: https://{{ aap_hostname }}/meta/public.der
-    dest: /home/centos/cloud-portal-api/{{ aap_hostname }}.der
-  notify: restart cloud-portal-api
+   - name: Cloud Portal APP | Copy installer
+     template: src=templates/deploy-cloud-portal-app.sh.j2 dest=/home/{{ service_user }}/deploy-cloud-portal-app.sh owner={{ service_user }} group={{ agent_group }} mode=744
+     notify: reinstall cloud-portal-app
 
-- name: Cloud Portal API | Register service
-  # TODO systemd module coming in ansible 2.2 !
-  template: src=templates/cloud-portal-api.service.j2 dest=/etc/systemd/system/multi-user.target.wants/cloud-portal-api.service
-  notify:
-    - reload systemd
-    - restart cloud-portal-api
-
-- name: Cloud Portal APP | Create dirs
-  file: state=directory path=/usr/share/nginx/cloud-portal-app
-
-- name: Cloud Portal APP | Copy installer
-  template: src=templates/deploy-cloud-portal-app.sh.j2 dest=/home/centos/deploy-cloud-portal-app.sh owner=centos group=centos mode=744
-  notify: reinstall cloud-portal-app
-
-- name: Cloud Portal APP | Download artifact
-  get_url:
-    url: https://ci.tsi.ebi.ac.uk/job/cloud-portal-{{ app_artifacts_source | default(artifacts_source) }}/job/ecp-app-build/lastSuccessfulBuild/artifact/portal-app.tgz
-    force_basic_auth: yes
-    url_username: "{{ jenkins_user }}"
-    url_password: "{{ jenkins_token }}"
-    dest: /home/centos/
-    owner: centos
-    group: centos
-  notify: reinstall cloud-portal-app
+   - name: Cloud Portal APP | Download artifact
+     get_url:
+      url: https://ci.tsi.ebi.ac.uk/job/cloud-portal-{{ app_artifacts_source | default(artifacts_source) }}/job/ecp-app-build/lastSuccessfulBuild/artifact/portal-app.tgz
+      force_basic_auth: yes
+      url_username: "{{ jenkins_user }}"
+      url_password: "{{ jenkins_token }}"
+      dest: /home/{{ service_user }}/
+      owner: "{{ service_user }}"
+      group: "{{ agent_group }}"
+     notify: reinstall cloud-portal-app
+  become: yes
+  become_method: sudo

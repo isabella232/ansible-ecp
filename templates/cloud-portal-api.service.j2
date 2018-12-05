@@ -5,8 +5,8 @@ After=syslog.target network.target
 [Service]
 ExecStart=/usr/bin/java -Djava.security.egd=file:/dev/./urandom -javaagent:/etc/newrelic/newrelic-agent-{{ newrelic_agent_version }}.jar -Dnewrelic.environment={{ newrelic_override_hostname }} -jar be-portal-api.jar $OPTIONS
 KillMode=process
-WorkingDirectory=/home/centos/cloud-portal-api
-User=centos
+WorkingDirectory=/home/{{ service_user }}/cloud-portal-api
+User={{ service_user }}
 Restart=on-abnormal
 RestartSec=90s
 

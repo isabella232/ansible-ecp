@@ -1,13 +1,17 @@
-- name: Github | Configure SSH
-  copy: src=files/ssh-config.txt dest=/home/centos/.ssh/config mode=0400
+- block:
+   - name: Github | Configure SSH
+     copy: src=files/ssh-config.txt dest=/home/{{ service_user }}/.ssh/config mode=0400
 
-- name: Github | Add host fingerprint to known host
-  known_hosts:
-    name: github.com
-    key: "github.com {{ lookup('file', 'files/github.com.pub') }}"
+   - name: Github | Add host fingerprint to known host
+     known_hosts:
+       name: github.com
+       key: "github.com {{ lookup('file', 'files/github.com.pub') }}"
 
-- name: Github | Autoconvert https to ssh, only for ourselves
-  git_config: name=url.git@github.com:{{ item }}/.insteadof scope=global value=https://github.com/{{ item }}/
-  with_items:
-    - EMBL-EBI-TSI
-    - "{{ github_private_repo_allowed }}"
+   - name: Github | Autoconvert https to ssh, only for ourselves
+     git_config: name=url.git@github.com:{{ item }}/.insteadof scope=global value=https://github.com/{{ item }}/
+     with_items:
+       - EMBL-EBI-TSI
+       - "{{ github_private_repo_allowed }}"
+  become: yes
+  become_method: sudo
+  become_user: "{{ service_user }}"

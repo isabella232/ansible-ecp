@@ -1,0 +1,4 @@
+###                                          ###
+### For executing script as  user            ###
+###                                          ###
+{{ service_user }}  ALL=({{ script_user }}) NOPASSWD:SETENV: /bin/bash, /bin/sh

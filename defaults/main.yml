@@ -15,3 +15,6 @@ api_hostname:
 app_hostname:
 match_folder_from_db: false
 github_private_repo_allowed: []
+service_user: centos
+script_user: centos
+agent_group: centos
