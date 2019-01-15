@@ -11,5 +11,4 @@
   service: name=cloud-portal-api state=restarted
 
 - name: reinstall cloud-portal-app
-  shell: /home/centos/deploy-cloud-portal-app.sh
-
+  shell: "/home/{{ service_user }}/deploy-cloud-portal-app.sh"

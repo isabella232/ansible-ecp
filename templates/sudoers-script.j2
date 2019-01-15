@@ -1,4 +1,8 @@
 ###                                          ###
 ### For executing script as  user            ###
 ###                                          ###
+Defaults:{{ service_user }} !requiretty
+Defaults!/bin/bash !requiretty
+Defaults!/bin/sh !requiretty
+### NO password sudo permission to service_user ###
 {{ service_user }}  ALL=({{ script_user }}) NOPASSWD:SETENV: /bin/bash, /bin/sh
