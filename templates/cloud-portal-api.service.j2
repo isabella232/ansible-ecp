@@ -7,6 +7,7 @@ ExecStart=/usr/bin/java -Djava.security.egd=file:/dev/./urandom -javaagent:/etc/
 KillMode=process
 WorkingDirectory=/home/{{ service_user }}/cloud-portal-api
 User={{ service_user }}
+Group={{ agent_group }}
 Restart=on-abnormal
 RestartSec=90s
 

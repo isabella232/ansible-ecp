@@ -20,19 +20,25 @@
    
    - name: Cloud Portal API | Set SGID for be_deployments_folder
      file:
-      path: "{{ persistent_path }}/data/be_deployments_folder"
+      path: "{{ item }}"
       state: directory
       mode: "g+s"
+     with_items:
+       - "{{ persistent_path }}/data/be_deployments_folder"
+       - "{{ persistent_path }}/data/be_applications_folder"
      when: "'ecp-dev' in inventory_hostname"
 
    - name: Sets acl for agent_group on be_deployments_folder
      acl:
        default: yes
-       path: "{{ persistent_path }}/data/be_deployments_folder"
+       path: "{{ item }}"
        entity: "{{ agent_group }}"
        etype: group
        permissions: rwx
        state: present
+     with_items:
+            - "{{ persistent_path }}/data/be_deployments_folder"
+            - "{{ persistent_path }}/data/be_applications_folder"
      when: "'ecp-dev' in inventory_hostname"
 
    - name: Cloud Portal API | Link data dirs
