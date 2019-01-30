@@ -35,6 +35,8 @@
        entity: "{{ agent_group }}"
        etype: group
        permissions: rwx
+       follow: no
+       recursive: yes
        state: present
      with_items:
             - "{{ persistent_path }}/data/be_deployments_folder"
@@ -77,7 +79,10 @@
 
    - name: Cloud Portal API | Install predefined private key 
      # temporary step so the portal can clone from github private repos, until we sort proper management of SSH keys per user
-     copy: src={{ path_to_cloud_key }} dest=/home/{{ service_user }}/.ssh/demo-key.pem owner={{ service_user }} group={{ agent_group }} mode=400
+     copy: src={{ path_to_cloud_key }} dest=/home/{{ item }}/.ssh/demo-key.pem owner={{ item }} group={{ agent_group }} mode=400
+     with_items:
+            - "{{ service_user }}"
+            - "{{ script_user }}"
 
    - name: Cloud Portal API | Download key for AAP
      get_url:
