@@ -1,0 +1,13 @@
+- name: Proteomics | install shade python module
+  pip:
+    name: shade
+
+- name: Proteomics | upgrade decorator python module
+  pip:
+    name: decorator
+    extra_args: --upgrade
+
+- name: Proteomics | upgrade openstacksdk python module
+  pip:
+    name: openstacksdk
+    extra_args: --upgrade

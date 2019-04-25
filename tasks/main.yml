@@ -22,6 +22,6 @@
 - include: 'install_terraform.yml'
 - include: 'install_newrelic_agent.yml'
 - include: 'install_cloud_portal.yml'
-
+- include: 'install_proteomics_deps.yml'
 - include: 'configure_git_access.yml'
   become: no
