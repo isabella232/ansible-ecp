@@ -1,0 +1,25 @@
+---
+
+# Install docker-ce
+- name: Add Docker repo
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+
+- name: install Docker-CE
+  yum:
+    name:
+       - docker-ce
+  become_method: sudo
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Add user {{ ansible_user }} to docker group
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes
