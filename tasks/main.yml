@@ -31,4 +31,5 @@
   become: no
  
 - name: Install latest Docker CE
-  import_tasks: docker_setup.yaml 
+  import_tasks: docker_setup.yaml
+  when: inventory_hostname == "ecp-dev"  
