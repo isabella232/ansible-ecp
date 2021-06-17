@@ -12,10 +12,6 @@
     - python-pip
     - python-libcloud
     - python2-jmespath
-    - yum-utils
-    - device-mapper-persistent-data
-    - lvm2
-    - libselinux-python3
 
 - name: Install portal dependencies (python modules)
   pip: name=virtualenv state=latest
