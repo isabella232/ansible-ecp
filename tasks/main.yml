@@ -25,3 +25,7 @@
 - include: 'install_proteomics_deps.yml'
 - include: 'configure_git_access.yml'
   become: no
+ 
+- name: Install latest Docker CE
+  import_tasks: docker_setup.yaml
+  when: inventory_hostname == "ecp-dev"  
