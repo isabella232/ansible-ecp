@@ -3,18 +3,18 @@
 - name: Install EPEL repo (needed for installing ansible)
   yum: pkg=epel-release state=latest
 
-#- name: Install portal dependencies
-#  yum: pkg={{ item }} state=latest
-#  with_items:
-#    - java-{{ java_version }}
-#    - git
-#    - ansible-{{ ecp_ansible_version }}.el7.noarch
-#    - python-pip
-#    - python-libcloud
-#    - python2-jmespath
+- name: Install portal dependencies
+  yum: pkg={{ item }} state=latest
+  with_items:
+    - java-{{ java_version }}
+    - git
+    - ansible-{{ ecp_ansible_version }}.el7.noarch
+    - python-pip
+    - python-libcloud
+    - python2-jmespath
 
-#- name: Install portal dependencies (python modules)
-#  pip: name=virtualenv state=latest
+- name: Install portal dependencies (python modules)
+  pip: name=virtualenv state=latest
 
 - name: Allow NGINX to use any port
   seboolean: name=httpd_can_network_connect state=yes persistent=yes
@@ -22,7 +22,7 @@
 - include: 'install_terraform.yml'
 - include: 'install_newrelic_agent.yml'
 - include: 'install_cloud_portal.yml'
-#- include: 'install_proteomics_deps.yml'
+- include: 'install_proteomics_deps.yml'
 - include: 'configure_git_access.yml'
   become: no
  
