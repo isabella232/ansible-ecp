@@ -19,3 +19,4 @@ service_user: centos
 script_user: centos
 agent_group: centos
 execute_script_sudo: false
+be_docker: false

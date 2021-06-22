@@ -23,3 +23,9 @@
     name: "{{ ansible_user }}"
     groups: docker
     append: yes
+    
+- name: Add service user {{ service_user }} to docker group
+  user:
+    name: "{{ service_user }}"
+    groups: docker
+    append: yes
