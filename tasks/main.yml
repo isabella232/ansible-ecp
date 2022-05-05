@@ -12,6 +12,7 @@
     - python-pip
     - python-libcloud
     - python2-jmespath
+    - ca-certificates
 
 - name: Install portal dependencies (python modules)
   pip: name=virtualenv state=latest
