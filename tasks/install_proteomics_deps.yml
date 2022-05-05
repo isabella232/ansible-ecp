@@ -1,13 +1,14 @@
 - name: Proteomics | install shade python module
   pip:
     name: shade
+    version: 1.32.0
 
 - name: Proteomics | upgrade decorator python module
   pip:
     name: decorator
-    extra_args: --upgrade
+    version: 4.4.2
 
 - name: Proteomics | upgrade openstacksdk python module
   pip:
     name: openstacksdk
-    extra_args: --upgrade
+    version: 0.45.0

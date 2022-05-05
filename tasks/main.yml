@@ -15,7 +15,9 @@
     - ca-certificates
 
 - name: Install portal dependencies (python modules)
-  pip: name=virtualenv state=latest
+  pip:
+    name: virtualenv
+    version: 20.14.1
 
 - name: Allow NGINX to use any port
   seboolean: name=httpd_can_network_connect state=yes persistent=yes
